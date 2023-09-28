@@ -1,12 +1,13 @@
 #ifndef TRIE_H
 #define TRIE_H
 
-#include <map>
+#include <unordered_map>
 
 namespace trie {
 	class TrieNode {
 	public:
-		std::map<char, TrieNode> children;
+		bool isWord = false;;
+		std::unordered_map<char, TrieNode> children;
 
 		TrieNode() { }
 

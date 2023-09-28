@@ -14,7 +14,6 @@
 #include "trie.hpp"
 
 #define WORDLIST_FILE "wordlist.txt"
-#define LAYOUT_FILE "layout.txt"
 
 struct Word {
 	std::string word;
@@ -39,8 +38,7 @@ const int DIR[8][2] = {
 };
 const std::string ARROWS[8] = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" };
 
-std::unordered_set<std::string> words;
-trie::TrieNode prefix;
+trie::TrieNode words;
 
 char grid[4][4];
 bool visited[4][4];
@@ -51,7 +49,7 @@ std::set<Word> results;
 void dfs(int sx, int sy, int x, int y, std::string word, trie::TrieNode *curNode) {
 	word += grid[x][y];
 
-	if (word.length() >= 3 && words.find(word) != words.end())
+	if (word.length() >= 3 && curNode->isWord)
 		results.insert({ word, sx, sy, movements });
 
 	for (int i = 0; i < 8; i++) {
@@ -84,13 +82,10 @@ int main() {
 	std::string word;
 	while (wordListFile) {
 		wordListFile >> word;
-		words.insert(word);
-	}
-
-	for (std::string word : words) {
-		trie::TrieNode *prevNode = prefix.add_or_get_child(word[0]);
+		trie::TrieNode *prevNode = words.add_or_get_child(word[0]);
 		for (size_t i = 1; i < word.length(); i++)
 			prevNode = prevNode->add_or_get_child(word[i]);
+		prevNode->isWord = true;
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -101,7 +96,7 @@ int main() {
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			visited[i][j] = true;
-			dfs(i, j, i, j, "", prefix.get_child(grid[i][j]));
+			dfs(i, j, i, j, "", words.get_child(grid[i][j]));
 			visited[i][j] = false;
 		}
 	}
